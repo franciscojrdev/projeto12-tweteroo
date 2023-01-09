@@ -21,19 +21,18 @@ app.post("/sign-up", (req, res) => {
   }
   users.push({ username, avatar });
   console.log(users)
-  res.send("OK").status(201);
+  res.status(201).send("OK");
 });
 
 app.post("/tweets", (req, res) => {
   const { username } = req.headers
   const { tweet } = req.body
   let findUser = users.find(el => el.username.toLowerCase() === username.toLowerCase())
-  console.log("teste",findUser)
   if(!findUser){
     res.status(401).send("UNAUTHORIZED")
     return
   }
-  if (!tweet) {
+  if (!tweet || !username) {
     res.status(400).send("Todos os campos são obrigatórios!");
     return;
   }
@@ -42,22 +41,13 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-  const { avatar } = req.headers
-  if (!avatar) {
-    res.status(400).send("Erro")
-    return
-  }
+
+  tweets.forEach((item,index,arr) => {
+    const {avatar} = users.find((user) => user.username === item.username)
+    arr[index] = {...item,avatar}
+  })
   const arrayTweets = [...tweets].reverse().slice(0, 10)
-  const newArray = []
-  for(let i = 0; i < arrayTweets.length; i++){
-    newArray.push({
-      username: arrayTweets[i].username,
-      avatar,
-      tweet: arrayTweets[i].tweet
-    })
-  }
-  console.log(newArray)
-  res.send(newArray)
+  res.status(201).send(arrayTweets)
 });
 
 app.get("/tweets/:username", (req,res) =>{
@@ -70,7 +60,6 @@ app.get("/tweets/:username", (req,res) =>{
     return
   }
   res.sendStatus(400)
-
 })
 
 app.listen(5000, () => {
