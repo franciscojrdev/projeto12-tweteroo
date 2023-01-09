@@ -12,7 +12,11 @@ app.post("/sign-up", (req, res) => {
   const { username, avatar } = req.body;
   if (!username || !avatar) {
     res.status(400).send("Todos os campos são obrigatórios!");
-    return;
+    return
+  }
+  if(typeof username !== "string" || typeof avatar !== "string"){
+    res.status(400).send("Valor diferente de String")
+    return
   }
   const findUser = users.find(name => name.username === username)
 
@@ -27,14 +31,14 @@ app.post("/sign-up", (req, res) => {
 app.post("/tweets", (req, res) => {
   const { username } = req.headers
   const { tweet } = req.body
-  let findUser = users.find(el => el.username.toLowerCase() === username.toLowerCase())
+  const findUser = users.find(el => el.username === username)
   if(!findUser){
     res.status(401).send("UNAUTHORIZED")
     return
   }
   if (!tweet || !username) {
     res.status(400).send("Todos os campos são obrigatórios!");
-    return;
+    return
   }
   tweets.push({ username, tweet });
   res.status(201).send("OK");
