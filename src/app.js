@@ -40,7 +40,7 @@ app.post("/tweets", (req, res) => {
     res.status(401).send("UNAUTHORIZED")
     return
   }
-  if (!tweet) {
+  if (!tweet || typeof tweet !== "string") {
     res.status(400).send("Todos os campos são obrigatórios!");
     return
   }
