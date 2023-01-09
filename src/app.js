@@ -18,7 +18,7 @@ app.post("/sign-up", (req, res) => {
     res.status(400).send("Valor diferente de String")
     return
   }
-  const findUser = users.find(name => name.username === username)
+  const findUser = users.find(name => name.username.toLowerCase() === username.toLowerCase())
 
   if(findUser){
     return res.status(400).send("Usuário já existe!")
@@ -29,25 +29,29 @@ app.post("/sign-up", (req, res) => {
 });
 
 app.post("/tweets", (req, res) => {
-  const { username } = req.headers
+  const { user } = req.headers
   const { tweet } = req.body
-  const findUser = users.find(el => el.username === username)
+  const findUser = users.find(el => el.username.toLowerCase() === user.toLowerCase())
+  if(!user){
+    res.status(400).send("Todos os campos são obrigatórios!");
+    return
+  }
   if(!findUser){
     res.status(401).send("UNAUTHORIZED")
     return
   }
-  if (!tweet || !username) {
+  if (!tweet) {
     res.status(400).send("Todos os campos são obrigatórios!");
     return
   }
-  tweets.push({ username, tweet });
+  tweets.push({ username:user, tweet });
   res.status(201).send("OK");
 });
 
 app.get("/tweets", (req, res) => {
 
   tweets.forEach((item,index,arr) => {
-    const {avatar} = users.find((user) => user.username === item.username)
+    const {avatar} = users.find((user) => user.username.toLowerCase() === item.username.toLowerCase())
     arr[index] = {...item,avatar}
   })
   if(tweets.length < 10){
@@ -59,15 +63,16 @@ app.get("/tweets", (req, res) => {
   res.status(201).send(arrayTweets)
 });
 
-app.get("/tweets/:username", (req,res) =>{
-  const {username} = req.params
+app.get("/tweets/:USERNAME", (req,res) =>{
+  const {USERNAME} = req.params
 
-  const userTweets = tweets.filter(el => el.username === username)
+  const userTweets = tweets.filter(el => el.username.toLowerCase() === USERNAME.toLowerCase())
 
   if(userTweets){
     res.send(userTweets.reverse())
     return
   }
+  console.log(userTweets)
   res.sendStatus(400)
 })
 
