@@ -46,6 +46,11 @@ app.get("/tweets", (req, res) => {
     const {avatar} = users.find((user) => user.username === item.username)
     arr[index] = {...item,avatar}
   })
+  if(tweets.length < 10){
+    const arrayTweets = [...tweets].reverse().slice(0, tweets.length)
+    res.status(201).send(arrayTweets)  
+    return
+  }
   const arrayTweets = [...tweets].reverse().slice(0, 10)
   res.status(201).send(arrayTweets)
 });
